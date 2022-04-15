@@ -6,7 +6,7 @@ public class Main {
         // Supported Languages: https://cloud.google.com/translate/docs/languages
         final String targetLanguage = "es";
 
-        CredentialsProvider credentials = IAMAuth.authExplicit(".\\res\\key2.json");
+        CredentialsProvider credentials = IAMAuth.authExplicit(".\\res\\key.json");
 
         Thread thread = new Thread(() -> {
             try {
