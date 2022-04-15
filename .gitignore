@@ -13,4 +13,4 @@ transcription.txt
 originalTranscription.txt
 translatedTranscription.txt
 .idea
-res/key.json
+key.json
