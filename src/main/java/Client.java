@@ -1,4 +1,4 @@
-import com.google.api.gax.core.CredentialsProvider;S
+import com.google.api.gax.core.CredentialsProvider;
 
 public class Client {
     public static void main(String[] args) throws Exception {
