@@ -6,14 +6,11 @@ import java.io.IOException;
 
 public class Translate {
     // Set and pass variables to overloaded translateText() method for translation.
-    public static String translateText(String text, CredentialsProvider credentials) throws IOException {
+    public static String translateText(String text, CredentialsProvider credentials, String targetLanguage) throws IOException {
         String projectId = "lofty-gravity-311304";
-        // Supported Languages: https://cloud.google.com/translate/docs/languages
-        String targetLanguage = "es";
         return translateText(projectId, targetLanguage, text, credentials);
     }
 
-    // Translate text to target language.
     public static String translateText(String projectId, String targetLanguage, String text, CredentialsProvider credentials)
             throws IOException {
 
@@ -34,9 +31,8 @@ public class Translate {
             TranslateTextResponse response = client.translateText(request);
 
             StringBuilder sb = new StringBuilder();
-            // Display the translation for each input text provided
             for (Translation translation : response.getTranslationsList()) {
-                sb.append("Translated text: " + translation.getTranslatedText() + "\n");
+                sb.append(translation.getTranslatedText());
             }
 
             return sb.toString();

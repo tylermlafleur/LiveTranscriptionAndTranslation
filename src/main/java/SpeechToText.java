@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class SpeechToText {
-    public static  void streamingMicRecognize(boolean recordTranscription, CredentialsProvider credentials) throws Exception {
+    public static  void streamingMicRecognize(boolean recordTranscription, CredentialsProvider credentials, int timeToRun, String targetLanguage) throws Exception {
 
         SpeechSettings settings = SpeechSettings.newBuilder().setCredentialsProvider(credentials).build();
 
@@ -26,9 +26,9 @@ public class SpeechToText {
 
                         public void onResponse(StreamingRecognizeResponse response) {
                             String res = response.getResultsList().get(0).getAlternativesList().get(0).getTranscript().trim() + ".";
-                            System.out.println(res);
+                            System.out.println("Original: " + res);
                             try {
-                                System.out.println(Translate.translateText(res, credentials));
+                                System.out.println("Translation: " + Translate.translateText(res, credentials, targetLanguage));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -36,19 +36,29 @@ public class SpeechToText {
                         }
 
                         public void onComplete() {
-                            for (StreamingRecognizeResponse response : responses) {
-                                StreamingRecognitionResult result = response.getResultsList().get(0);
-                                SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
-                                try {
-                                    System.out.println(Translate.translateText(alternative.getTranscript(), credentials));
-                                    System.out.println("Transcript : " + alternative.getTranscript());
-                                    if(recordTranscription){
-                                        FileOutput.writeToFile("transcription.txt",
-                                                "Begin new transcription:\n" + alternative.getTranscript() + "\nEnd transcription.\n\n");
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                            StringBuilder originalText = new StringBuilder();
+                            StringBuilder translatedText = new StringBuilder();
+
+                            try {
+                                for (StreamingRecognizeResponse response : responses) {
+                                    StreamingRecognitionResult result = response.getResultsList().get(0);
+                                    SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
+
+                                    translatedText.append(Translate.translateText(alternative.getTranscript(), credentials, targetLanguage).trim() + "\n");
+                                    originalText.append(alternative.getTranscript().trim() + "\n");
                                 }
+                                if (recordTranscription) {
+                                    FileOutput.writeToFile("originalTranscription.txt",
+                                            "Begin new transcription:\n" + originalText.toString() + "End transcription.\n\n");
+                                    FileOutput.writeToFile("translatedTranscription.txt",
+                                            "Begin new transcription:\n" + translatedText.toString() + "End transcription.\n\n");
+                                }
+                                System.out.println("\nOriginal Transcription:\n" + originalText.toString());
+                                System.out.println("Translated Transcription:\n" + translatedText.toString());
+
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -92,7 +102,7 @@ public class SpeechToText {
             long estimatedTime = System.currentTimeMillis() - startTime;
 
             AudioInputStream audio = new AudioInputStream(targetDataLine);
-            while (estimatedTime <= 7000 ) {
+            while (estimatedTime <= timeToRun ) {
                 estimatedTime = System.currentTimeMillis() - startTime;
                 byte[] data = new byte[640];
                 audio.read(data);
