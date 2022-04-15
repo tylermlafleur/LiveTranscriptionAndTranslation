@@ -1,54 +1,22 @@
-import com.google.api.gax.longrunning.OperationFuture;
-import com.google.api.gax.longrunning.OperationTimedPollAlgorithm;
-import com.google.api.gax.retrying.RetrySettings;
-import com.google.api.gax.retrying.TimedRetryAlgorithm;
-import com.google.api.gax.rpc.ApiStreamObserver;
-import com.google.api.gax.rpc.BidiStreamingCallable;
+import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.rpc.ClientStream;
 import com.google.api.gax.rpc.ResponseObserver;
 import com.google.api.gax.rpc.StreamController;
-import com.google.cloud.speech.v1.LongRunningRecognizeMetadata;
-import com.google.cloud.speech.v1.LongRunningRecognizeResponse;
-import com.google.cloud.speech.v1.RecognitionAudio;
-import com.google.cloud.speech.v1.RecognitionConfig;
-import com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding;
-import com.google.cloud.speech.v1.RecognizeResponse;
-import com.google.cloud.speech.v1.SpeechClient;
-import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
-import com.google.cloud.speech.v1.SpeechRecognitionResult;
-import com.google.cloud.speech.v1.SpeechSettings;
-import com.google.cloud.speech.v1.StreamingRecognitionConfig;
-import com.google.cloud.speech.v1.StreamingRecognitionResult;
-import com.google.cloud.speech.v1.StreamingRecognizeRequest;
-import com.google.cloud.speech.v1.StreamingRecognizeResponse;
-import com.google.cloud.speech.v1.WordInfo;
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
+
+import javax.sound.sampled.*;
 import javax.sound.sampled.DataLine.Info;
-import javax.sound.sampled.TargetDataLine;
-import org.threeten.bp.Duration;
+import java.io.IOException;
+import java.util.ArrayList;
 
-public class LiveTranscriptionTest {
-    public static void main(String[] args) throws Exception {
-        streamingMicRecognize();
-    }
+public class SpeechToText {
+    public static  void streamingMicRecognize(boolean recordTranscription, CredentialsProvider credentials) throws Exception {
 
-
-    public static void streamingMicRecognize() throws Exception {
+        SpeechSettings settings = SpeechSettings.newBuilder().setCredentialsProvider(credentials).build();
 
         ResponseObserver<StreamingRecognizeResponse> responseObserver = null;
-        try (SpeechClient client = SpeechClient.create()) {
+        try (SpeechClient client = SpeechClient.create(settings)) {
 
             responseObserver =
                     new ResponseObserver<StreamingRecognizeResponse>() {
@@ -57,7 +25,13 @@ public class LiveTranscriptionTest {
                         public void onStart(StreamController controller) {}
 
                         public void onResponse(StreamingRecognizeResponse response) {
-                            System.out.println(response.getResultsList().get(0).getAlternativesList().get(0).getTranscript().trim() + ".");
+                            String res = response.getResultsList().get(0).getAlternativesList().get(0).getTranscript().trim() + ".";
+                            System.out.println(res);
+                            try {
+                                System.out.println(Translate.translateText(res, credentials));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             responses.add(response);
                         }
 
@@ -65,7 +39,16 @@ public class LiveTranscriptionTest {
                             for (StreamingRecognizeResponse response : responses) {
                                 StreamingRecognitionResult result = response.getResultsList().get(0);
                                 SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
-                                System.out.printf("Transcript : %s\n", alternative.getTranscript());
+                                try {
+                                    System.out.println(Translate.translateText(alternative.getTranscript(), credentials));
+                                    System.out.println("Transcript : " + alternative.getTranscript());
+                                    if(recordTranscription){
+                                        FileOutput.writeToFile("transcription.txt",
+                                                "Begin new transcription:\n" + alternative.getTranscript() + "\nEnd transcription.\n\n");
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
 
@@ -84,46 +67,38 @@ public class LiveTranscriptionTest {
                             .setSampleRateHertz(16000)
                             .build();
             StreamingRecognitionConfig streamingRecognitionConfig =
-                    StreamingRecognitionConfig.newBuilder().setConfig(recognitionConfig).setInterimResults(true).build();
+                    StreamingRecognitionConfig.newBuilder().setConfig(recognitionConfig).setInterimResults(false).build();
 
             StreamingRecognizeRequest request =
                     StreamingRecognizeRequest.newBuilder()
                             .setStreamingConfig(streamingRecognitionConfig)
-                            .build(); // The first request in a streaming call has to be a config
+                            .build();
 
             clientStream.send(request);
-            // SampleRate:16000Hz, SampleSizeInBits: 16, Number of channels: 1, Signed: true,
-            // bigEndian: false
             AudioFormat audioFormat = new AudioFormat(16000, 16, 1, true, false);
             DataLine.Info targetInfo =
-                    new Info(
-                            TargetDataLine.class,
-                            audioFormat); // Set the system information to read from the microphone audio stream
+                    new Info(TargetDataLine.class, audioFormat);
 
             if (!AudioSystem.isLineSupported(targetInfo)) {
                 System.out.println("Microphone not supported");
                 System.exit(0);
             }
-            // Target data line captures the audio stream the microphone produces.
+
             TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
             targetDataLine.open(audioFormat);
             targetDataLine.start();
             System.out.println("Start speaking");
             long startTime = System.currentTimeMillis();
             long estimatedTime = System.currentTimeMillis() - startTime;
-            // Audio Input Stream
+
             AudioInputStream audio = new AudioInputStream(targetDataLine);
-            while (estimatedTime <= 30000 ) {
+            while (estimatedTime <= 7000 ) {
                 estimatedTime = System.currentTimeMillis() - startTime;
                 byte[] data = new byte[640];
                 audio.read(data);
-                request =
-                        StreamingRecognizeRequest.newBuilder()
-                                .setAudioContent(ByteString.copyFrom(data))
-                                .build();
+                request = StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(data)).build();
                 clientStream.send(request);
             }
-            System.out.println("Stop speaking.");
             targetDataLine.stop();
             targetDataLine.close();
         } catch (Exception e) {

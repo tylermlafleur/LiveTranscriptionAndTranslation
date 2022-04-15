@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "lofty-gravity-311304",
+  "private_key_id": "137db075d91fbdd93244610c30d2369a5f5d22bb",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCpUD1UE8kad6Wd\nCvDjQAZ6moO++Ds/+M0iiJ4YvhMS0H115SxLTBBoKsquY4BFgJtXJqyZDJswki6G\nZUszkL4bDgOQK2+KP1zWpmspWai1j3zWbpFOSUYF4LuhQO2QNbYZk/EIAPHqDbro\nm9y0wpYdgzyP5cAZNBLu8go7LXfXMAO2/TjJXZUNgKgCgLutpOEIRUGtPn4fG+oo\nK2kTA4sP1sUpv5j4VASU3QVSaxzpYqM5RnJyvYPvNzMPtbgp2A+ozrlh7SYiXGSa\nBAm19mM3HSGb/V1P1Xy6028bcDjNlrAAAt88Gom4rl4CMKORjah1B2t5/7GD1Mup\nBD7EOnERAgMBAAECggEAB4I34g4UPatU3yjQeNzf8gPUYr2lT7I5PguTKqjn9Xjl\nDiYuch1qtIVB9/y7gCQ9X16nSgykJ5cytIJH/5QES59cuuyjivJB7AFf4GrUlPlg\nJtiq8tmZic0HDSubuCjwTTnsIc0m7Vi+s1j8L1EE3BoJRMltMkDxXlhCFLtGD2HZ\nde8opDvRnPnjVgedNZ6HEJCXbDvj3PKFUfLKj/04Bx68UdLX/4ktfbNj4cqSZB0/\nQe9xPm8+JXglo3ctlLMmRPa1kWfU3mTftrxqig2cxM8GwirHbAis6ObpmrAY79Ut\nhkbn/dCPna9FpF6tvvCn0VgA61TkbOvrPZJACHmtBQKBgQDhgNsYDBNVkxIbdCoT\nTtAULDmUIK5cnfv9W+7ytWa5wV4jG85lWyCD64FIEwuvavVkhABze14R+d5q4FPx\ni00AVTNUxw2pANPoEVOY7tBWJ1gIPr0iCnycmmkLO1C2F1VGEnx6smohoxR2gxKv\nCL+/2gTDiKJVUPx3s8cMUXd27QKBgQDANgji0hSkZJ/VC+rAivQgTQDHbG4QeZyB\ns45tl3McGflJthxvirBNuYn9OO6nQFFGnousm1RTPHQkxTHIRjUB6ePDbb9pFl6a\nD40//bk0uh1SKNFBnzIjtvCJcqZpCP9buK63rncyXruh7fBMDAvbs6Ms09Zj3uck\nAY54z/3aNQKBgD4sPbvakHYWj3Z8R6F9KEd3jgR2Ijys3i4Ta8UFGKZ8Vs0NPJGb\nV1Kn2sQZZC5gKfolns44JE6Gerky0lIVWwyNcRKdsvl2nfYs2MSgi1ZFkLLtQU4i\nYAr5U57iIrWhp0Qjkqhtim9tvBWUu9EAc4WcwZV7lW46XvFN4sJVr79dAoGAHJVs\niN6Y90GHi1U0WeHQICWTYhS74XNUVO1w1tdY5Orv6YhNfkDvqv9Wh/O5eeHUtF3L\ng6WtypsI4pb4qkHWjCxOFLfzaRtMgjih1sxSiIbM6XTseYfFGw6PgsEsAh62atty\nEBq/2xu/Z3tM6uI3uTpjn7z4+u0hDne0yj6UD6kCgYBmSGWHRJZNeADIlzsy7P1x\nceqbzCT/D0KPvUVIkaCT0Qq118VTiH2NpW0sRcHy/Ab8Wxf82fwY6UxkyOUns7Sy\nguji8Rg+2AcXJCc8N7MC4isGttiIOELpzo+7oGGj8PGsdtSaLhXv0bEoNm5KA4N3\nkzry0iJD8tkDkF8b0bohQQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "apiconnect@lofty-gravity-311304.iam.gserviceaccount.com",
+  "client_id": "101382894924152577388",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/apiconnect%40lofty-gravity-311304.iam.gserviceaccount.com"
+}

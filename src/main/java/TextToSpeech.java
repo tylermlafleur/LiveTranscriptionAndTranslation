@@ -1,11 +1,7 @@
 // Imports the Google Cloud client library
-import com.google.cloud.texttospeech.v1.AudioConfig;
-import com.google.cloud.texttospeech.v1.AudioEncoding;
-import com.google.cloud.texttospeech.v1.SsmlVoiceGender;
-import com.google.cloud.texttospeech.v1.SynthesisInput;
-import com.google.cloud.texttospeech.v1.SynthesizeSpeechResponse;
-import com.google.cloud.texttospeech.v1.TextToSpeechClient;
-import com.google.cloud.texttospeech.v1.VoiceSelectionParams;
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.texttospeech.v1.*;
 import com.google.protobuf.ByteString;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -14,14 +10,18 @@ import java.io.OutputStream;
  * Google Cloud TextToSpeech API sample application. Example usage: mvn package exec:java
  * -Dexec.mainClass='com.example.texttospeech.QuickstartSample'
  */
-public class TextToSpeechBasic {
+public class TextToSpeech {
 
     /** Demonstrates using the Text-to-Speech API. */
-    public static void main(String... args) throws Exception {
+    public static void TextToSpeech(String text, GoogleCredentials credentials) throws Exception {
         // Instantiates a client
-        try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
+        TextToSpeechSettings settings =
+                TextToSpeechSettings.newBuilder()
+                        .setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+
+        try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create(settings)) {
             // Set the text input to be synthesized
-            SynthesisInput input = SynthesisInput.newBuilder().setText("Hello, World!").build();
+            SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
 
             // Build the voice request, select the language code ("en-US") and the ssml voice gender
             // ("neutral")
