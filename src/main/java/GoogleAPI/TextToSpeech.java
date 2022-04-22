@@ -1,4 +1,4 @@
-// Imports the Google Cloud client library
+package GoogleAPI;// Imports the Google Cloud client library
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;
@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 /**
- * Google Cloud TextToSpeech API sample application. Example usage: mvn package exec:java
+ * Google Cloud GoogleAPI.TextToSpeech API sample application. Example usage: mvn package exec:java
  * -Dexec.mainClass='com.example.texttospeech.QuickstartSample'
  */
 public class TextToSpeech {

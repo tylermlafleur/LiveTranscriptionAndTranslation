@@ -1,3 +1,5 @@
+package GoogleAPI;
+
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.rpc.ClientStream;
 import com.google.api.gax.rpc.ResponseObserver;
@@ -11,7 +13,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class SpeechToText {
-    public static  void streamingMicRecognize(boolean recordTranscription, CredentialsProvider credentials, int timeToRun, String targetLanguage) throws Exception {
+    private boolean transcribing;
+
+    public SpeechToText() {
+        transcribing = false;
+    }
+
+    public void setTranscribing(boolean transcribing) {
+            this.transcribing = transcribing;
+    }
+
+    public boolean getTranscribing() {
+        return transcribing;
+    }
+
+    public void streamingMicRecognize(boolean recordTranscription, CredentialsProvider credentials,
+                                      String targetLanguage, StringBuilder originalTranscription, StringBuilder translatedTranscription) throws Exception {
 
         SpeechSettings settings = SpeechSettings.newBuilder().setCredentialsProvider(credentials).build();
 
@@ -22,16 +39,23 @@ public class SpeechToText {
                     new ResponseObserver<StreamingRecognizeResponse>() {
                         ArrayList<StreamingRecognizeResponse> responses = new ArrayList<>();
 
-                        public void onStart(StreamController controller) {}
+                        public void onStart(StreamController controller) {
+                            System.out.println(transcribing);
+                        }
 
                         public void onResponse(StreamingRecognizeResponse response) {
                             String res = response.getResultsList().get(0).getAlternativesList().get(0).getTranscript().trim() + ".";
-                            System.out.println("Original: " + res);
+                            String translation = null;
                             try {
-                                System.out.println("Translation: " + Translate.translateText(res, credentials, targetLanguage));
+                                translation = Translate.translateText(res, credentials, targetLanguage);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+                            System.out.println("Original: " + res);
+                            System.out.println("Translation: " + translation);
+
+                            originalTranscription.append(res + "\n");
+                            translatedTranscription.append(translation + "\n");
                             responses.add(response);
                         }
 
@@ -102,7 +126,7 @@ public class SpeechToText {
             long estimatedTime = System.currentTimeMillis() - startTime;
 
             AudioInputStream audio = new AudioInputStream(targetDataLine);
-            while (estimatedTime <= timeToRun ) {
+            while (transcribing) {
                 estimatedTime = System.currentTimeMillis() - startTime;
                 byte[] data = new byte[640];
                 audio.read(data);

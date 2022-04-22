@@ -1,3 +1,5 @@
+package GoogleAPI;
+
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.v3.*;

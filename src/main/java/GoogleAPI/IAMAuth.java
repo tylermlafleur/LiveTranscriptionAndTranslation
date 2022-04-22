@@ -1,3 +1,5 @@
+package GoogleAPI;
+
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.gax.paging.Page;
@@ -12,7 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class IAMAuth {
-    static CredentialsProvider authExplicit(String jsonPath) throws IOException {
+    public static CredentialsProvider authExplicit(String jsonPath) throws IOException {
         // You can specify a credential file by providing a path to GoogleCredentials.
         // Otherwise credentials are read from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
 
