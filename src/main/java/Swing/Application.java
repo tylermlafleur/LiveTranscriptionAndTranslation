@@ -34,7 +34,7 @@ public class Application {
 
         stt = new SpeechToText();
         try {
-            credentials = IAMAuth.authExplicit(".\\res\\key.json");
+            credentials = IAMAuth.authExplicit("./key.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,7 +47,6 @@ public class Application {
         transcribeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(stt.getTranscribing());
                 if (!stt.getTranscribing()) {
                     stt.setTranscribing(true);
                     beginTranscription();
