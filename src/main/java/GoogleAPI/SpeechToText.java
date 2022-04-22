@@ -9,14 +9,25 @@ import com.google.protobuf.ByteString;
 
 import javax.sound.sampled.*;
 import javax.sound.sampled.DataLine.Info;
+import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class SpeechToText {
     private boolean transcribing;
+    private FileOutput originalTextFile;
+    private FileOutput translatedTextFile;
+
+    private StringBuilder originalTranscription;
+    private StringBuilder translatedTranscription;
 
     public SpeechToText() {
         transcribing = false;
+        originalTextFile = new FileOutput("originalTranscription.txt");
+        translatedTextFile = new FileOutput("translatedTranscription.txt");
+        originalTranscription = new StringBuilder();
+        translatedTranscription = new StringBuilder();
     }
 
     public void setTranscribing(boolean transcribing) {
@@ -28,9 +39,15 @@ public class SpeechToText {
     }
 
     public void streamingMicRecognize(boolean recordTranscription, CredentialsProvider credentials,
-                                      String targetLanguage, StringBuilder originalTranscription, StringBuilder translatedTranscription) throws Exception {
+                                      String targetLanguage, JTextArea originalTextArea,
+                                      JTextArea translatedTextArea) {
 
-        SpeechSettings settings = SpeechSettings.newBuilder().setCredentialsProvider(credentials).build();
+        SpeechSettings settings = null;
+        try {
+            settings = SpeechSettings.newBuilder().setCredentialsProvider(credentials).build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         ResponseObserver<StreamingRecognizeResponse> responseObserver = null;
         try (SpeechClient client = SpeechClient.create(settings)) {
@@ -40,7 +57,16 @@ public class SpeechToText {
                         ArrayList<StreamingRecognizeResponse> responses = new ArrayList<>();
 
                         public void onStart(StreamController controller) {
-                            System.out.println(transcribing);
+                            if(recordTranscription) {
+                                try {
+                                    originalTextFile.openFile();
+                                    translatedTextFile.openFile();
+                                    originalTextFile.writeToFile("Begin Transcription:\n");
+                                    translatedTextFile.writeToFile("Begin Transcription:\n");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
 
                         public void onResponse(StreamingRecognizeResponse response) {
@@ -54,31 +80,34 @@ public class SpeechToText {
                             System.out.println("Original: " + res);
                             System.out.println("Translation: " + translation);
 
+                            originalTextArea.append(res + "\n");
+                            translatedTextArea.append(translation + "\n");
+
+                            try {
+                                originalTextFile.writeToFile(res + "\n");
+                                translatedTextFile.writeToFile(translation + "\n");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
                             originalTranscription.append(res + "\n");
                             translatedTranscription.append(translation + "\n");
+
+
                             responses.add(response);
                         }
 
                         public void onComplete() {
-                            StringBuilder originalText = new StringBuilder();
-                            StringBuilder translatedText = new StringBuilder();
 
                             try {
-                                for (StreamingRecognizeResponse response : responses) {
-                                    StreamingRecognitionResult result = response.getResultsList().get(0);
-                                    SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
-
-                                    translatedText.append(Translate.translateText(alternative.getTranscript(), credentials, targetLanguage).trim() + "\n");
-                                    originalText.append(alternative.getTranscript().trim() + "\n");
-                                }
                                 if (recordTranscription) {
-                                    FileOutput.writeToFile("originalTranscription.txt",
-                                            "Begin new transcription:\n" + originalText.toString() + "End transcription.\n\n");
-                                    FileOutput.writeToFile("translatedTranscription.txt",
-                                            "Begin new transcription:\n" + translatedText.toString() + "End transcription.\n\n");
+                                    originalTextFile.writeToFile("End transcription.\n\n");
+                                    translatedTextFile.writeToFile("End transcription.\n\n");
+                                    originalTextFile.closeFile();
+                                    translatedTextFile.closeFile();
                                 }
-                                System.out.println("\nOriginal Transcription:\n" + originalText.toString());
-                                System.out.println("Translated Transcription:\n" + translatedText.toString());
+                                System.out.println("\nOriginal Transcription:\n" + originalTranscription.toString());
+                                System.out.println("Translated Transcription:\n" + translatedTranscription.toString());
 
                             }
                             catch (Exception e) {
@@ -139,5 +168,8 @@ public class SpeechToText {
             System.out.println(e);
         }
         responseObserver.onComplete();
+
+        //reset transcription variables
+
     }
 }
