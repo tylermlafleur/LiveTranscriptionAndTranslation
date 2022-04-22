@@ -17,8 +17,8 @@ public class Application {
     private JPanel rootPanel;
     private JTextPane originalTextPane;
     private JButton transcribeButton;
-    private JTextArea originalTextArea = new JTextArea();
-    private JScrollPane originalScrollPane = new JScrollPane();
+    private JTextArea originalTextArea;
+    private JScrollPane originalScrollPane;
     private JScrollPane translatedScrollPane;
     private JTextArea translatedTextArea;
 
@@ -28,12 +28,16 @@ public class Application {
     private CredentialsProvider credentials;
     SpeechToText stt;
 
-    public Application() throws IOException {
+    public Application() {
         originalTranscription = new StringBuilder();
         translatedTranscription = new StringBuilder();
 
         stt = new SpeechToText();
-        credentials = IAMAuth.authExplicit(".\\res\\key.json");
+        try {
+            credentials = IAMAuth.authExplicit(".\\res\\key.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         originalTextArea.setLineWrap(true);
         originalTextArea.setEditable(false);
@@ -64,7 +68,8 @@ public class Application {
 
         Thread thread = new Thread(() -> {
             try {
-                stt.streamingMicRecognize(true, credentials, targetLanguage, originalTranscription, translatedTranscription);
+                stt.streamingMicRecognize(true, credentials, targetLanguage,
+                        originalTextArea, translatedTextArea);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -72,7 +77,7 @@ public class Application {
         thread.start();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         JFrame frame = new JFrame("Application");
         frame.setContentPane(new Application().rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
