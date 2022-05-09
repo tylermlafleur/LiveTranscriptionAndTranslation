@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Swing.Application">
-  <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="0" left="0" bottom="0" right="0"/>
+  <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="10" right="0"/>
     <constraints>
       <xy x="20" y="20" width="878" height="480"/>
     </constraints>
@@ -12,8 +12,8 @@
     <children>
       <scrollpane id="d72ce" binding="originalScrollPane">
         <constraints>
-          <grid row="1" column="0" row-span="2" col-span="1" vsize-policy="0" hsize-policy="2" anchor="1" fill="1" indent="0" use-parent-layout="false">
-            <minimum-size width="400" height="300"/>
+          <grid row="2" column="0" row-span="5" col-span="2" vsize-policy="0" hsize-policy="2" anchor="9" fill="0" indent="2" use-parent-layout="false">
+            <minimum-size width="160" height="40"/>
             <preferred-size width="400" height="300"/>
             <maximum-size width="400" height="300"/>
           </grid>
@@ -25,13 +25,15 @@
         <children>
           <component id="4ecf7" class="javax.swing.JTextArea" binding="originalTextArea">
             <constraints/>
-            <properties/>
+            <properties>
+              <font name="MS Outlook" size="16"/>
+            </properties>
           </component>
         </children>
       </scrollpane>
       <scrollpane id="2e2ca" binding="translatedScrollPane">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="1" fill="1" indent="0" use-parent-layout="false">
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="9" fill="0" indent="2" use-parent-layout="false">
             <minimum-size width="400" height="300"/>
             <preferred-size width="400" height="300"/>
             <maximum-size width="400" height="300"/>
@@ -44,29 +46,104 @@
         <children>
           <component id="bfd45" class="javax.swing.JTextArea" binding="translatedTextArea">
             <constraints/>
-            <properties/>
+            <properties>
+              <font name="MS Outlook" size="16"/>
+            </properties>
           </component>
         </children>
       </scrollpane>
-      <vspacer id="a4829">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="1" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="-1" height="30"/>
-            <preferred-size width="-1" height="30"/>
-            <maximum-size width="-1" height="30"/>
-          </grid>
-        </constraints>
-      </vspacer>
       <component id="65ed" class="javax.swing.JButton" binding="transcribeButton">
         <constraints>
-          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="3" column="2" row-span="4" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <minimum-size width="200" height="30"/>
             <preferred-size width="200" height="30"/>
             <maximum-size width="200" height="30"/>
           </grid>
         </constraints>
         <properties>
-          <text value="Begin Transcription"/>
+          <text value="Begin Translation"/>
+        </properties>
+      </component>
+      <component id="e7535" class="javax.swing.JComboBox" binding="originalLanguageComboBox">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false">
+            <minimum-size width="160" height="26"/>
+            <preferred-size width="160" height="26"/>
+            <maximum-size width="160" height="26"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="5ea10" class="javax.swing.JComboBox" binding="translatedLanguageComboBox">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="2" use-parent-layout="false">
+            <minimum-size width="160" height="26"/>
+            <preferred-size width="160" height="26"/>
+            <maximum-size width="160" height="26"/>
+          </grid>
+        </constraints>
+        <properties>
+          <model/>
+        </properties>
+      </component>
+      <component id="4d403" class="javax.swing.JCheckBox" binding="saveTranscriptionCheckBox">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="4" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Save Transcription"/>
+        </properties>
+      </component>
+      <component id="6d80d" class="javax.swing.JLabel" binding="statusLabel">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="16" style="1"/>
+          <text value="Loading..."/>
+        </properties>
+      </component>
+      <component id="da132" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="2" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Original Language"/>
+        </properties>
+      </component>
+      <component id="91809" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="2" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Translated Language"/>
+          <verticalAlignment value="0"/>
+        </properties>
+      </component>
+      <component id="802c" class="javax.swing.JCheckBox" binding="clearTextCheckBox">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="4" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Clear text on new translation"/>
+        </properties>
+      </component>
+      <component id="2effc" class="javax.swing.JButton" binding="changeSaveLocationButton" default-binding="true">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="4" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Change Save Location"/>
+        </properties>
+      </component>
+      <component id="ce869" class="javax.swing.JTextField" binding="saveLocationTextField">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <editable value="false"/>
         </properties>
       </component>
     </children>

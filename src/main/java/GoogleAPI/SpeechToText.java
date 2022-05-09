@@ -5,6 +5,7 @@ import com.google.api.gax.rpc.ClientStream;
 import com.google.api.gax.rpc.ResponseObserver;
 import com.google.api.gax.rpc.StreamController;
 import com.google.cloud.speech.v1.*;
+import com.google.cloud.translate.Language;
 import com.google.protobuf.ByteString;
 
 import javax.sound.sampled.*;
@@ -13,21 +14,32 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class SpeechToText {
     private boolean transcribing;
+    private String fileLocation;
     private FileOutput originalTextFile;
     private FileOutput translatedTextFile;
 
     private StringBuilder originalTranscription;
     private StringBuilder translatedTranscription;
 
-    public SpeechToText() {
+    private Translate translate;
+    private CredentialsProvider credentials;
+
+    public SpeechToText(CredentialsProvider credentials) throws IOException {
+        this.credentials = credentials;
+        translate = new Translate(credentials);
+        fileLocation = "";
         transcribing = false;
-        originalTextFile = new FileOutput("originalTranscription.txt");
-        translatedTextFile = new FileOutput("translatedTranscription.txt");
         originalTranscription = new StringBuilder();
         translatedTranscription = new StringBuilder();
+    }
+
+    public void setFileLocation(String fileLocation) {
+        this.fileLocation = fileLocation;
     }
 
     public void setTranscribing(boolean transcribing) {
@@ -38,9 +50,8 @@ public class SpeechToText {
         return transcribing;
     }
 
-    public void streamingMicRecognize(boolean recordTranscription, CredentialsProvider credentials,
-                                      String targetLanguage, JTextArea originalTextArea,
-                                      JTextArea translatedTextArea) {
+    public void streamingMicRecognize(boolean recordTranscription, String originalLanguage, String targetLanguage,
+                                      JTextArea originalTextArea, JTextArea translatedTextArea, JLabel statusLabel) {
 
         SpeechSettings settings = null;
         try {
@@ -59,10 +70,13 @@ public class SpeechToText {
                         public void onStart(StreamController controller) {
                             if(recordTranscription) {
                                 try {
+                                    originalTextFile = new FileOutput(fileLocation + "originalTranscription.txt");
+                                    translatedTextFile = new FileOutput(fileLocation + "translatedTranscription.txt");
                                     originalTextFile.openFile();
                                     translatedTextFile.openFile();
-                                    originalTextFile.writeToFile("Begin Transcription:\n");
-                                    translatedTextFile.writeToFile("Begin Transcription:\n");
+                                    originalTextFile.writeToFile("Begin Transcription. Date: " + new Date().toString() + " Original Language = " + originalLanguage + ":\n");
+                                    String translateOut = "Begin Transcription. Date: " + new Date().toString() + " Original Language = " + originalLanguage + ":\n";
+                                    translatedTextFile.writeToFile(translate.translateText(translateOut, targetLanguage));
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -73,7 +87,7 @@ public class SpeechToText {
                             String res = response.getResultsList().get(0).getAlternativesList().get(0).getTranscript().trim() + ".";
                             String translation = null;
                             try {
-                                translation = Translate.translateText(res, credentials, targetLanguage);
+                                translation = translate.translateText(res, targetLanguage);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -83,11 +97,13 @@ public class SpeechToText {
                             originalTextArea.append(res + "\n");
                             translatedTextArea.append(translation + "\n");
 
-                            try {
-                                originalTextFile.writeToFile(res + "\n");
-                                translatedTextFile.writeToFile(translation + "\n");
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            if(recordTranscription) {
+                                try {
+                                    originalTextFile.writeToFile(res + "\n");
+                                    translatedTextFile.writeToFile(translation + "\n");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             originalTranscription.append(res + "\n");
@@ -98,8 +114,8 @@ public class SpeechToText {
                         }
 
                         public void onComplete() {
-
                             try {
+                                statusLabel.setText("Start Translation");
                                 if (recordTranscription) {
                                     originalTextFile.writeToFile("End transcription.\n\n");
                                     translatedTextFile.writeToFile("End transcription.\n\n");
@@ -107,8 +123,8 @@ public class SpeechToText {
                                     translatedTextFile.closeFile();
                                 }
                                 System.out.println("\nOriginal Transcription:\n" + originalTranscription.toString());
-                                System.out.println("Translated Transcription:\n" + translatedTranscription.toString());
-
+                                String translateOut = "Translated Transcription:\n" + translatedTranscription.toString();
+                                System.out.println(translate.translateText(translateOut, targetLanguage));
                             }
                             catch (Exception e) {
                                 e.printStackTrace();
@@ -150,13 +166,11 @@ public class SpeechToText {
             TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
             targetDataLine.open(audioFormat);
             targetDataLine.start();
+            statusLabel.setText("Start speaking...");
             System.out.println("Start speaking");
-            long startTime = System.currentTimeMillis();
-            long estimatedTime = System.currentTimeMillis() - startTime;
 
             AudioInputStream audio = new AudioInputStream(targetDataLine);
             while (transcribing) {
-                estimatedTime = System.currentTimeMillis() - startTime;
                 byte[] data = new byte[640];
                 audio.read(data);
                 request = StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(data)).build();
@@ -169,7 +183,6 @@ public class SpeechToText {
         }
         responseObserver.onComplete();
 
-        //reset transcription variables
 
     }
 }
