@@ -75,7 +75,7 @@ public class SpeechToText {
                                     originalTextFile.openFile();
                                     translatedTextFile.openFile();
                                     originalTextFile.writeToFile("Begin Transcription. Date: " + new Date().toString() + " Original Language = " + originalLanguage + ":\n");
-                                    String translateOut = "Begin Transcription. Date: " + new Date().toString() + " Original Language = " + originalLanguage + ":\n";
+                                    String translateOut = "Begin Transcription. Date: " + new Date().toString() + " Translated to = " + targetLanguage + ":\n";
                                     translatedTextFile.writeToFile(translate.translateText(translateOut, targetLanguage));
                                 } catch (IOException e) {
                                     e.printStackTrace();

@@ -115,6 +115,17 @@ public class Application {
         originalLanguageComboBox.setModel(new DefaultComboBoxModel<String>(languageList.toArray(new String[languageList.size()])));
         translatedLanguageComboBox.setModel(new DefaultComboBoxModel<String>(languageList.toArray(new String[languageList.size()])));
 
+        saveTranscriptionCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!saveTranscriptionCheckBox.isSelected()) {
+                    changeSaveLocationButton.setEnabled(false);
+                } else {
+                    changeSaveLocationButton.setEnabled(true);
+                }
+            }
+        });
+
         originalLanguageComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
